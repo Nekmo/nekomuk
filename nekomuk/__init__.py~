@@ -78,7 +78,6 @@ def get_dir_info(files, path):
             if limit[0] < file[2]['size'] and file[2]['size'] < limit[1]:
                 in_limits = True
                 sizes_limits[limit] += 1
-                break
         if not in_limits:
             margin = 1024 * 1024 * 7
             key_limits = (file[2]['size'] - margin, file[2]['size'] + margin)
