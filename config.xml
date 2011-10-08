@@ -1,0 +1,12 @@
+<config>
+  <extensions>
+    <extension>mkv</extension>
+    <extension>mp4</extension>
+    <extension>avi</extension>
+    <extension>mov</extension>
+    <extension>wmv</extension>
+  </extensions>
+  <dirs>
+    <dir device="/home">/nekmo/videos</dir>
+  </dirs>
+</config>
