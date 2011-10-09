@@ -22,4 +22,4 @@ def search_files(label, path, exts, callback):
             if not root_ in files_by_dir.keys():
                 files_by_dir[root_] = []
             files_by_dir[root_].append((file, root_, callback_data))
-    return sorted(files_list), files_by_dir
+    return sorted(files_list), files_by_dir, root_path

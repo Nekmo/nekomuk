@@ -20,7 +20,10 @@ try:
     import readline
     import glob
     def complete(text, state):
-        return (glob.glob(text+'*')+[None])[state]
+        comp_text = (glob.glob(text+'*')+[None])[state]
+        if os.path.exists(comp_text) and os.path.isdir(comp_text):
+            comp_text += '/'
+        return comp_text
     readline.set_completer_delims(' \t\n;')
     readline.parse_and_bind("tab: complete")
     readline.set_completer(complete)

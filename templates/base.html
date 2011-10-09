@@ -5,7 +5,7 @@
         %(title)s
         <script type="text/javascript" src="/static/js/jquery.min.js"></script>
         <script type="text/javascript" src="/static/js/jquery.history.js"></script>
-        <script type="text/javascript" src="/static/js/portal.js"></script>
+        <script type="text/javascript" src="%(root)sstatic/js/ajax.js"></script>
         <script type="text/javascript">
         $(document.body).ready(function (){
         });
@@ -13,14 +13,16 @@
         %(js)s
         %(css)s
         <!--Escrito con Kate en entorno KDE4 bajo un sistema GNU/Linux (Distribución Archlinux)--> 
-        <link type="text/css" rel="stylesheet" href="/static/css/portal.css" /> 
+        <link type="text/css" rel="stylesheet" href="%(root)sstatic/css/style.css" /> 
     </head> 
  
     <body>
         <div id="top">
             %(top)s
         </div>
-        <div id="content">
+        <div id="panel">
+        </div>
+        <div id="content" class="view_list_details">
             %(content)s
         </div>
     </body> 
