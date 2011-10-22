@@ -16,7 +16,6 @@ def search_files(label, path, exts, callback, filter_dir, filter_filename):
         device = device['path']
     root_path = os.path.join(device, path)
     last_t = int(time.time())
-    last_filename_length = 0
     for root, dirs, files in os.walk(root_path):
         if filter_dir and not re.match(filter_dir, os.path.split(root)[1]):
             continue
@@ -31,10 +30,13 @@ def search_files(label, path, exts, callback, filter_dir, filter_filename):
             if filter_filename and not re.match(filter_filename, file):
                 continue
             if last_t != int(time.time()):
-                sys.stdout.write("\x08" * last_filename_length)
-                last_filename_length = len(os.path.join(root, file))
+                file_ = file
+                if len(file_) > 80: file_ = '...' + file_[:-78]
+                sys.stdout.write("\x08" * 80)
                 sys.stdout.flush()
-                sys.stdout.write(os.path.join(root, file))
+                reset_length = 80 - len(file_)
+                if reset_length < 0: reset_length = 0
+                sys.stdout.write(file_ + (' ' * reset_length))
                 sys.stdout.flush()
                 last_t = int(time.time())
             total_size += os.path.getsize(os.path.join(root, file))
