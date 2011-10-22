@@ -102,7 +102,11 @@ def html_device(name, files_by_dir, real_root, sizes):
                 else:
                     width = height = '???'
                 container = str(file[2].get('type', '?'))
-                length = str(int(file[2].get('length', 0) / 60)) + _(' mins.')
+                length = file[2]['length']
+                if length:
+                    length = str(int(length / 60)) + _(' mins.')
+                else:
+                    length = '?'
                 video_codec = file[2]['video'][0]['codec']
                 audio_codec = file[2]['audio'][0]['codec']
                 if not video_codec:

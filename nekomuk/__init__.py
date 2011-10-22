@@ -191,7 +191,7 @@ def devices_index():
     for device in os.listdir('html/devices/'):
         device_elem = (E.li(
             E.a(parse.unquote(device), {
-                'href': 'devices/' + parse.quote_plus(device),
+                'href': 'devices/' + parse.quote_plus(device) + '/',
                 'title': device
                 }),
             E.input('', {
