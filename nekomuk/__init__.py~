@@ -260,8 +260,8 @@ def html_build(cfg):
     exts = []
     for ext in cfg.findall('extensions/extension'):
         exts.append(ext.text)
-    filter_dir = cfg.findall('filter_dir')[0]
-    filter_filename = cfg.findall('filter_filename')[0]
+    filter_dir = cfg.findall('filter_dir')[0].text
+    filter_filename = cfg.findall('filter_filename')[0].text
     devices_files = {}
     for dir_ in cfg.findall('dirs/dir'):
         logging.info(_('Construyendo índice de "%s"') % dir_.attrib['device'])

@@ -28,7 +28,7 @@ def search_files(label, path, exts, callback, filter_dir, filter_filename):
                 continue
             if not file.split('.')[-1] in exts:
                 continue
-            if filter_filename and not len(re.match(file, filter_filename)):
+            if filter_filename and not re.match(filter_filename, file):
                 continue
             if last_t != int(time.time()):
                 sys.stdout.write("\x08" * last_filename_length)
