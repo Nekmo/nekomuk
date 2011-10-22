@@ -47,7 +47,7 @@ else:
     unicode = str
 
 THUMB_WIDTH = 120.0
-MAX_THREADS = 1
+MAX_THREADS = 8
 
 def get_video_info(root, file, label, device, path):
     """Obtener información del archivo de vídeo.
