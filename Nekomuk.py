@@ -39,6 +39,8 @@ if sys.version_info < (3,0):
     sys.setdefaultencoding('utf8')
     input = raw_input
 
+__version__ = '0.05'
+
 EXTS = ['mkv', 'mp4', 'avi', 'mov', 'wmv']
 
 if __name__ == '__main__':
@@ -51,7 +53,12 @@ if __name__ == '__main__':
                         help='Establecer el nivel de los logs a solo advertencias.')
     parser.add_argument('--error', dest='loglevel', action='store_const',
                         const=logging.ERROR, default=logging.INFO,
-                        help='Establecer el nivel a solo errores del programa.') 
+                        help='Establecer el nivel a solo errores del programa.')
+    parser.add_argument('--not-update', dest='not_update', action='store_const',
+                        const=True, default=False,
+                        help='No actualizar el árbol de directorios..')
+    args = parser.parse_args()
+    logging.basicConfig(level=args.loglevel, format='%(levelname)-8s %(message)s')
     if not os.path.exists('config.xml'):
         cprint(_('No se ha encontrado en este directorio, "%s", ningún '\
                 'proyecto de Nekomuk. ¿Desea comenzar uno?') % os.getcwd())
@@ -88,6 +95,17 @@ if __name__ == '__main__':
             extension.text = ext
             extensions.append(extension)
         root.append(extensions)
+        # Se añade la versión de Nekomuk
+        version = etree.Element('version')
+        version.text = __version__
+        root.append(version)
+        # Filtros regex para nombres y directorios
+        filter_dir = etree.Element('filter_dir')
+        filter_dir.text = ''
+        root.append(filter_dir)
+        filter_filename = etree.Element('filter_filename')
+        filter_filename.text = ''
+        root.append(filter_filename)
         # Construir elemento dirs
         dirs_elem = etree.Element('dirs')
         for dir_ in dirs:
@@ -101,6 +119,6 @@ if __name__ == '__main__':
         with open('config.xml', 'w') as f:
             f.write(etree.tostring(root, pretty_print=True))
     cfg = etree.parse('config.xml')
-    if True:
+    if not args.not_update:
         html_build(cfg)
     

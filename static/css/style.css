@@ -1,0 +1,340 @@
+body {
+    margin: 0;
+    font: 91% Verdana, Arial, Helvetica, sans-serif;
+}
+
+a {
+    text-decoration: none;
+    color: #363636;
+}
+a:visited {
+    color: #1c73a5;
+}
+
+.hide {
+    display: none;
+}
+
+#device, #sub_root, #locals, #content .verbose {
+    display: none;
+}
+
+#top {
+    height: 80px;
+    background: #f1f1f1 url(../img/logo.png) no-repeat 10px 5px;
+    border-bottom: 1px solid #d2d2d2;
+    margin-bottom: 10px;
+    padding-left: 300px;
+}
+
+#top #search input {
+    font-size: 24px;
+    border: 1px solid #d2d2d2;
+    color: #d2d2d2;
+    margin-top: 20px;
+    width: 320px;
+}
+
+#top #search input:focus {
+    color: #4b4b4b;
+}
+
+#top .show_advance {
+    color: #7b7b7b;
+    background-repeat: no-repeat;
+    padding-left: 22px;
+    background-position: left bottom;
+    background-image: url(../img/list_add_gray.png);
+    cursor: pointer;
+}
+
+#top .show_advance:hover {
+    background-image: url(../img/list_add.png);
+}
+
+#top .advance {
+    display: none;
+}
+
+#top .advance > div {
+    float: left;
+    font-size: 13px;
+    color: #7b7b7b;
+    margin-right: 7px;
+}
+
+#top .advance label {
+    height: 100%;
+    vertical-align: middle;
+}
+
+#view {
+    position: absolute;
+    left: 660px;
+    top: 20px;
+/*     padding: 3px; */
+    background: #ffffff;
+    border: 1px solid #d2d2d2;
+}
+
+#view > span {
+    width: 28px;
+    height: 24px;
+    display: block;
+    float: left;
+    background-color: #f8f8f8;
+    background-repeat: no-repeat;
+    background-position: center center;
+    border: 1px solid #d2d2d2;
+    margin: 3px;
+    cursor: pointer;
+}
+
+#view .icons {
+    background-image: url(../img/view_list_icons.png);
+}
+#view .details {
+    background-image: url(../img/view_list_details.png);
+}
+
+#content {
+    width: 85%;
+    min-width: 850px;
+
+/*     margin: 0 auto 0 auto; */
+}
+
+#content > .files {
+    width: 95%;
+    min-width: 800px;
+    margin: 0 auto 0 auto;
+    overflow: hidden;
+}
+
+#content.view_list_details .filediv:hover {
+    background: #e6eef2;
+}
+
+#content.view_list_details .filediv .size {
+    float: right;
+    color: #4f4f4f;
+    width: 100px;
+    display: block;
+    text-align: right;
+}
+#content.view_list_details .filediv .mean_size {
+    float: right;
+    color: #4f4f4f;
+    width: 150px;
+    display: block;
+    text-align: right;
+}
+
+#content.view_list_icons .filediv {
+    float: left;
+    width: 100px;
+    height: 100px;
+    margin: 5px;
+    overflow: hidden;
+    text-align: center;
+}
+
+#content.view_list_icons .filediv:hover {
+    background: #e6eef2;
+}
+
+#content.view_list_icons .filediv .name {
+    overflow: hidden;
+    clear: both;
+    width: 100%;
+    display: block;
+}
+
+#content.view_list_icons .filediv .size {
+    display: none;
+}
+#content.view_list_icons .filediv .mean_size {
+    display: none;
+}
+
+#content.view_list_details .icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 6px;
+    vertical-align: text-top;
+}
+
+#content.view_list_icons .icon {
+    width: 48px;
+    height: 48px;
+    clear: both;
+    margin-right: 
+/*     vertical-align: text-top; */
+}
+
+#results {
+    width: 85%;
+    min-width: 850px;
+    overflow: hidden;
+/*     margin: 0 auto 0 auto; */
+}
+
+#results > .files, #results > .dirs {
+    width: 95%;
+    min-width: 800px;
+    margin: 0 auto 0 auto;
+}
+
+#results .dir .name {
+    background-image: url(../img/folder16.png);
+    background-repeat: no-repeat;
+    padding-left: 22px;
+}
+
+#results .file .name {
+    background-image: url(../img/video16.png);
+    background-repeat: no-repeat;
+    padding-left: 22px;
+}
+
+#content {
+    width: 85%;
+    min-width: 850px;
+/*     margin: 0 auto 0 auto; */
+}
+
+/* Listado de dispositivos */
+#devices {
+    width: 90%;
+}
+#devices li {
+    list-style: square url(../img/hdd.png);
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+#devices li:hover {
+    background: #e6eef2;
+}
+
+#devices li input {
+    float: right;
+}
+
+.merge {
+    border: 1px solid #747474;
+    background: #fafafa url(../img/tools_wizard.png) no-repeat 4px 4px;
+    padding: 4px;
+    cursor: pointer;
+    padding-left: 22px;
+    margin-left: 5%;
+}
+
+.t_update {
+    text-align: center;
+    width: 100%;
+    font-size: 13px;
+    color: #2c2c2c;
+    margin-top: 10px;
+}
+
+.license {
+    display: block;
+    text-align: center;
+    width: 100%;
+    font-size: 13px;
+    margin-top: 5px;
+}
+
+#legal {
+    width: 800px;
+    margin-left: 5%;
+}
+
+#legal > div {
+    margin-bottom: 5px;
+    margin-top: 5px;
+}
+
+#legal h1, #legal h2, #legal h3 {
+    color: #596d6f;
+}
+
+#legal #autor_div {
+    text-align: center;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+#legal .autor {
+    font-size: 20px;
+    background: url(../img/nekmo.png) no-repeat;
+    padding-left: 60px;
+    padding-top: 20px;
+    display: inline-block;
+    height: 30px;
+}
+
+#legal .mail {
+    display: block;
+}
+#legal #show_license {
+    font-size: 80%;
+}
+
+#panel {
+    background: #e1e3e5 url(../img/panel_background.png) repeat-y;
+    border: 2px solid #a7adb1;
+    border-right: 0;
+    min-height: 350px;
+    min-width: 160px;
+    width: 13%;
+    right: 0;
+    top: 110px;
+    position: fixed;
+}
+
+#panel .frame_thumb {
+    border: 1px solid #111111;
+    border-left: 0;
+    border-right: 0;
+    height: 75px;
+    width: 136px;
+    background: #4d4d4d url(../img/media48.png) no-repeat;
+    background-position: center center;
+    margin: 0 auto 0 auto;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.frame_thumb .left, .frame_thumb .right {
+    background: url(../img/thumb_border.png);
+    height: 100%;
+    width: 8px;
+    float: left;
+}
+
+#panel #thumb {
+    width: 120px;
+    height: 75px;
+    float: left;
+    background-position: center center;
+    background-repeat: no-repeat
+}
+
+#panel .label {
+    font-weight: bold;
+    color: #38434c
+}
+
+#panel .verbose {
+    margin-left: 10px;
+    font-size: 13px;
+    overflow: hidden;
+    height: 16px;
+    width: 95%;
+}
+
+#panel .data {
+    
+}

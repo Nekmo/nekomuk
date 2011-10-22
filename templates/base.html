@@ -3,9 +3,12 @@
     <head profile="http://gmpg.org/xfn/11"> 
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /> 
         %(title)s
-        <script type="text/javascript" src="/static/js/jquery.min.js"></script>
-        <script type="text/javascript" src="/static/js/jquery.history.js"></script>
-        <script type="text/javascript" src="%(root)sstatic/js/ajax.js"></script>
+        <script type="text/javascript" src="%(root)sstatic/js/jquery.min.js"></script>
+        <script type="text/javascript" src="%(root)sstatic/js/jquery.history.js"></script>
+        <script type="text/javascript" src="%(root)sstatic/js/jquery.hoverIntent.js"></script>
+        <script type="text/javascript" src="%(root)sstatic/js/jquery.cookie.js"></script>
+        <script type="text/javascript" src="%(root)sstatic/js/jquery.slideto.js"></script>
+        <script type="text/javascript" src="%(root)sstatic/js/main.js"></script>
         <script type="text/javascript">
         $(document.body).ready(function (){
         });
@@ -17,14 +20,75 @@
     </head> 
  
     <body>
+        %(device)s
+        %(sub_root)s
+        %(locals)s
+        <div id="pattern">
+            <div class="file">
+                <span class="name"></span>
+            </div>
+            <div class="dir">
+                <a class="name" href=""></a>
+            </div>
+        </div>
         <div id="top">
             %(top)s
         </div>
         <div id="panel">
+            <div class="frame_thumb">
+                <div class="left"></div>
+                <div id="thumb"></div>
+                <div class="right"></div>
+            </div>
+            <div class="verbose">
+                <span class="container_text label"></span>
+                <span class="container data"></span>
+            </div>
+            <div class="verbose">
+                <span class="size_text label"></span>
+                <span class="size data"></span>
+            </div>
+            <div class="verbose">
+                <span class="length_text label"></span>
+                <span class="length data"></span>
+            </div>
+            <div class="verbose">
+                <span class="video_codec_text label"></span>
+                <span class="video_codec data"></span>
+            </div>
+            <div class="verbose">
+                <span class="resolution_text label"></span>
+                <span class="resolution data"></span>
+            </div>
+            <div class="verbose">
+                <span class="aspect_text label"></span>
+                <span class="aspect data"></span>
+            </div>
+            <div class="verbose">
+                <span class="fps_text label"></span>
+                <span class="fps data"></span>
+            </div>
+            <div class="verbose">
+                <span class="audio_codec_text label"></span>
+                <span class="audio_codec data"></span>
+            </div>
+            <div class="verbose">
+                <span class="samplerate_text label"></span>
+                <span class="samplerate data"></span>
+            </div>
+            <div class="verbose">
+                <span class="audio_channels_text label"></span>
+                <span class="audio_channels data"></span>
+            </div>
+        </div>
+        <div id="results">
+            <div class="dirs">
+            </div>
+            <div class="files">
+            </div>
         </div>
         <div id="content" class="view_list_details">
             %(content)s
         </div>
     </body> 
- 
 </html> 
