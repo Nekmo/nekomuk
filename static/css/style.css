@@ -219,6 +219,7 @@ a:visited {
 
 #devices li input {
     float: right;
+    clear: both;
 }
 
 .merge {

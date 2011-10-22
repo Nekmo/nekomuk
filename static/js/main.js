@@ -273,7 +273,7 @@ $(document).ready(function(){
         $('#content').html('');
         $('#content').append($('<div class="files"></div>'));
         $.each(devices, function(i, device){
-            $.ajax($('#sub_root').text() + 'devices/' + encodeURIComponent(device) + '/' + path, {
+            $.ajax($('#sub_root').text() + 'devices/' + encodeURIComponent(encodeURIComponent(device)) + '/' + path, {
                 cache: true,
                 dataType: 'html',
                 async: false,
@@ -286,7 +286,7 @@ $(document).ready(function(){
                         img_src = $('#sub_root').text() + img_src.replace(/\.\.\//g, '');
                         $(filediv).find('.icon').attr('src', img_src);
                         if($(filediv).find('a')){
-                            var href = $(filediv).find('a').attr('href');
+                            var href = path.replace('/index.html', '') + '/' + $(filediv).find('a').attr('href');
                             href = '#!merge?devices=' + encodeURIComponent(kwargs['devices']) + '&path=' + encodeURIComponent(href);
                             $(filediv).find('a').attr('href', href);
                         }
