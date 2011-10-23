@@ -39,7 +39,10 @@ def new_html():
     os.mkdir('html/s')
     os.mkdir('html/share/')
     os.mkdir('html/share/icons')
-    
+
+#def recursive_remove(device, tree):
+    #os.path.split('html', 'devices', device, )
+
 def html_device(name, files_by_dir, real_root, sizes):
     dirname = 'html/devices/' + parse.quote_plus(name)
     # Se reconstruye el árbol de directorios
@@ -157,7 +160,18 @@ def html_device(name, files_by_dir, real_root, sizes):
         with open(os.path.join(dirname, path, 'index.html'), 'w') as f:
             f.write(html)
     make_subdirs(tree, '', dirname, files_by_dir, name, real_root, sizes)
-        
+    
+    # Eliminar "directorios fantasma" (que han sido eliminados).
+    for root, dirs, files in os.walk(dirname):
+        root = root.replace(dirname, '')
+        for dir in dirs:
+            if root:
+                path_dir = os.path.join(root, dir)
+            else:
+                path_dir = dir
+            if path_dir.startswith('/'): path_dir = path_dir[1:]
+            if not path_dir in files_by_dir.keys():
+                shutil.rmtree(os.path.join(dirname, path_dir))        
 def make_index(name, files, real_root):
     dirname = 'html/s/' + parse.quote_plus(name)
     if os.path.exists(dirname):
@@ -213,7 +227,9 @@ def devices_index():
     # Índice falso en devices
     root = etree.Element('script', {'id': 'script', 'type': "text/javascript"})
     root.text = 'window.location = "../index.html"'
-    
+    with open('html/devices/index.html', 'w') as f:
+        html = render_html(root, '', '', '')
+        f.write(html)
 
 def legal():
     root = (E.div(
@@ -277,6 +293,9 @@ def html_build(cfg):
         files, files_by_dir, real_root, sizes = search_files(dir_.attrib['device'],
                     dir_.text, exts, get_video_info,
                     filter_dir, filter_filename)
+        if not os.path.exists(real_root):
+            logging.warning('No se pudo acceder a "%s".' % real_root)
+            continue
         html_device('/'.join([dir_.attrib['device'], dir_.text]),
                     files_by_dir, real_root, sizes)
         make_index('/'.join([dir_.attrib['device'], dir_.text]),

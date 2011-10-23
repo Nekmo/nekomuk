@@ -42,6 +42,9 @@ def make_elem_dir(dir, files, path, real_root, sizes):
 def make_subdirs(tree, path, dirname, files_by_dir, device, real_root, sizes):
     """Hacer los índices de los directorios que sólo contienen carpetas.
     """
+    if not path in files_by_dir.keys():
+        if not path.split(os.sep) == 1:
+            files_by_dir[path] = ()
     if not os.path.exists(os.path.join(dirname, path, 'index.html')):
         path_parts = path.split(os.sep)
         for path_part in tuple(path_parts):
