@@ -191,7 +191,7 @@ def devices_index():
     for device in os.listdir('html/devices/'):
         device_elem = (E.li(
             E.a(parse.unquote(device), {
-                'href': 'devices/' + parse.quote_plus(device),
+                'href': 'devices/' + parse.quote_plus(device) + '/',
                 'title': device
                 }),
             E.input('', {
@@ -210,6 +210,10 @@ def devices_index():
     with open('html/index.html', 'w') as f:
         html = render_html(root, '', '', '')
         f.write(html)
+    # Índice falso en devices
+    root = etree.Element('script', {'id': 'script', 'type': "text/javascript"})
+    root.text = 'window.location = "../index.html"'
+    
 
 def legal():
     root = (E.div(

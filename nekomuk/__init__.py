@@ -210,6 +210,12 @@ def devices_index():
     with open('html/index.html', 'w') as f:
         html = render_html(root, '', '', '')
         f.write(html)
+    # Índice falso en devices
+    root = etree.Element('script', {'id': 'script', 'type': "text/javascript"})
+    root.text = 'window.location = "../index.html"'
+    with open('html/devices/index.html', 'w') as f:
+        html = render_html(root, '', '', '')
+        f.write(html)
 
 def legal():
     root = (E.div(

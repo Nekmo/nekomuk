@@ -61,6 +61,10 @@ $(document).ready(function(){
             data = data.replace(/<script/g, '<scr_ipt');
             data = data.replace(/<\/script>/g, '</scr_ipt>');
             var title = $('<div />').html(data).find('#title').text();
+            var js = $('<div />').html(data).find('#script').text();
+            if(js){
+                eval(js);
+            }
             var sub_root = $('<div />').html(data).find('#sub_root').text();
             $('#sub_root').text(sub_root)
             history.pushState({ path: href + window.location.hash}, title, href + window.location.hash);
