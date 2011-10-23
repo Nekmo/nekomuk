@@ -146,7 +146,7 @@ $(document).ready(function(){
                 // Búsqueda sólo aquí
                 $('#content').show();
                 $('#results').hide();
-                var pattern = new RegExp($('#search input').val())
+                var pattern = new RegExp($('#search input').val(), 'i')
                 $.each($('#content .files > div'), function(){
                     if(pattern.exec($(this).find('.name').text())){
                         $(this).show();
