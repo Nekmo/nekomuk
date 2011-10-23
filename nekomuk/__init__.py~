@@ -171,7 +171,8 @@ def html_device(name, files_by_dir, real_root, sizes):
                 path_dir = dir
             if path_dir.startswith('/'): path_dir = path_dir[1:]
             if not path_dir in files_by_dir.keys():
-                shutil.rmtree(os.path.join(dirname, path_dir))        
+                shutil.rmtree(os.path.join(dirname, path_dir))
+
 def make_index(name, files, real_root):
     dirname = 'html/s/' + parse.quote_plus(name)
     if os.path.exists(dirname):
@@ -200,6 +201,9 @@ def make_index(name, files, real_root):
                 print(e)
 
 def devices_index():
+    # Se borra el index actual
+    if os.path.exists('html/index.html'):
+        os.remove('html/index.html')
     root = etree.Element('div')
     devices = etree.Element('ul', id='devices')
     for device in os.listdir('html/devices/'):

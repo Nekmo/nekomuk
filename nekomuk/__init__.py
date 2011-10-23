@@ -204,6 +204,7 @@ def devices_index():
     root = etree.Element('div')
     devices = etree.Element('ul', id='devices')
     for device in os.listdir('html/devices/'):
+        if device == 'index.html': continue
         device_elem = (E.li(
             E.a(parse.unquote(device), {
                 'href': 'devices/' + parse.quote_plus(device) + '/',

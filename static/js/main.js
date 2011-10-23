@@ -347,6 +347,10 @@ $(document).ready(function(){
         ajax_load(location.pathname);
     })
     
+    $('#logo_div').click(function(){
+        window.location = $('#sub_root').text() + 'index.html'
+    });
+    
     String.prototype.startswith = function (str){
         return this.indexOf(str) == 0;
     };

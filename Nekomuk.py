@@ -86,6 +86,8 @@ if __name__ == '__main__':
             if dirs and not output:
                 # Se ha pulsado Enter, y por tanto no se desean añadir más
                 break
+            if output and not output.endswith('/'):
+                output += '/'
             dirs.append(output)
         root = etree.Element('config')
         # Construir elemento extensions
