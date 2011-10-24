@@ -22,9 +22,6 @@ def search_files(label, path, exts, callback, filter_dir, filter_filename):
         total_size = 0
         root_ = root.replace(root_path, '', 1)
         for file in files:
-            if file == 'index.html':
-                os.remove(os.path.join(root, file))
-                continue
             if not file.split('.')[-1] in exts:
                 continue
             if filter_filename and not re.match(filter_filename, file):
@@ -48,5 +45,6 @@ def search_files(label, path, exts, callback, filter_dir, filter_filename):
         size_by_dir[root] = total_size
         for dir in dirs:
             files_list.append((dir, root_, {'size': 0, 'type': 'dir'}))
-    print('')
+    sys.stdout.write(' ' * 80)
+    sys.stdout.flush()
     return sorted(files_list), files_by_dir, root_path, size_by_dir

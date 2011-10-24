@@ -49,6 +49,10 @@ def new_html():
 
 def html_device(name, files_by_dir, real_root, sizes):
     dirname = 'html/devices/' + parse.quote_plus(name)
+    # Se borran los archivos index del device de la carpeta del proyecto
+    for root, dirs, files in os.walk(dirname):
+        if 'index.html' in files:
+            os.remove(os.path.join(root, 'index.html'))
     # Se reconstruye el árbol de directorios
     tree = {}
     for path in files_by_dir.keys():
@@ -310,12 +314,24 @@ def html_build(cfg):
                     dir_.text, exts, get_video_info,
                     filter_dir, filter_filename)
         if not os.path.exists(real_root):
+            sys.stdout.write("\x08" * 80)
+            sys.stdout.flush()
             logging.warning('No se pudo acceder a "%s".' % real_root)
             continue
+        sys.stdout.write("\x08" * 80)
+        sys.stdout.flush()
+        sys.stdout.write(_('Generando archivos index del proyecto...'))
+        sys.stdout.flush()
         html_device('/'.join([dir_.attrib['device'], dir_.text]),
                     files_by_dir, real_root, sizes)
         make_index('/'.join([dir_.attrib['device'], dir_.text]),
                     files, real_root)
+        sys.stdout.write(' ' * 80)
+        sys.stdout.flush()
+        sys.stdout.write("\x08" * 80)
+        sys.stdout.flush()
+        sys.stdout.write(_('Terminado\n'))
+        sys.stdout.flush()
     # Se crea el índice de particiones
     devices_index()
     # Añadir nota legal
