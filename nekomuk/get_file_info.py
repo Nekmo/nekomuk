@@ -108,16 +108,16 @@ def get_dir_info(files, path, real_root):
             margin = 1024 * 1024 * 7
             key_limits = (file[2]['size'] - margin, file[2]['size'] + margin)
             sizes_limits[key_limits] = 1
-        # Detectar icono del directorio
-        icon = detect_dir_icon(os.path.join(real_root, path))
-        if icon:
-            dst = os.path.join('html', 'share', 'icons', parse.quote_plus(icon))
-            if not os.path.exists(dst):
-                shutil.copy(icon, dst)
-            icon = 'share/icons/' + parse.quote(parse.quote_plus(icon))
-            icon = root + icon
-        else:
-            icon = root + 'static/img/folder.svg' # icono por defecto
+    # Detectar icono del directorio
+    icon = detect_dir_icon(os.path.join(real_root, path))
+    if icon:
+        dst = os.path.join('html', 'share', 'icons', parse.quote_plus(icon))
+        if not os.path.exists(dst):
+            shutil.copy(icon, dst)
+        icon = 'share/icons/' + parse.quote(parse.quote_plus(icon))
+        icon = root + icon
+    else:
+        icon = root + 'static/img/folder.svg' # icono por defecto
     if sizes_limits:
         first_limit = sorted(sizes_limits.items(), key=lambda x: x[1])[-1][0]
     else:

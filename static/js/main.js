@@ -29,11 +29,13 @@ $(document).ready(function(){
     view_list_icons = function(){
         $('#content').removeClass('view_list_details');
         $('#content').addClass('view_list_icons');
+        $('#columns_info').hide();
     }
     
     view_list_details = function(){
         $('#content').removeClass('view_list_icons');
         $('#content').addClass('view_list_details');
+        $('#columns_info').show();
     }
     
     $('#view .icons').click(function(){
@@ -132,6 +134,7 @@ $(document).ready(function(){
                                 });
                                 if(all_in_query){
                                     // Término bueno
+                                    val[3] = decodeURIComponent(decodeURIComponent(device)) + ':' + decodeURIComponent(decodeURIComponent(val[1]));
                                     val[1] = $('#sub_root').text() + 'devices/' + device + '/' + val[1]
                                     results.append(val);
                                 }
@@ -205,6 +208,7 @@ $(document).ready(function(){
                 device_search(q_parts, results, device)
             });
             $('#results * *').remove();
+            results.sort();
             $.each(results, function(i, file_data){
                 if(file_data[3]=='dir'){
                     var pattern = $('#pattern .dir').clone();
@@ -215,6 +219,7 @@ $(document).ready(function(){
                 } else {
                     var pattern = $('#pattern .file').clone();
                     $(pattern).find('.name').text(file_data[2]);
+                    $(pattern).attr('title', file_data[3])
                     $('#results .files').append(pattern);
                 }
             });

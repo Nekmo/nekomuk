@@ -9,6 +9,7 @@ import json
 import time
 import logging
 from kaa import metadata
+from operator import itemgetter
 from lxml.builder import E
 from lxml import etree
 from gettext import gettext as _
@@ -32,6 +33,9 @@ else:
     unicode = str
 
 ASPECTS = {1.3333333333333333: '4:3', 1.7777777777777777: '16:9', 1: '1:1'}
+
+def cmp_lower(elements):
+    return elements[0].lower()
 
 def new_html():
     os.mkdir('html')
@@ -76,11 +80,16 @@ def html_device(name, files_by_dir, real_root, sizes):
                 subtree = subtree[dir]
         else:
             subtree = subtree
+        root.append((E.div('',
+            E.span(unicode(_('Nombre')), {'class': 'name'}),
+            E.span(unicode(_('Tamaño')), {'class': 'size'}),
+            E.span(unicode(_('Tam. predominante')), {'class': 'mean_size'}),
+        {'id': 'columns_info', 'class': 'filediv'})))
         # Se añaden primero los directorios. Si hay.
-        for dir in ['../'] + sorted(subtree.keys()):
+        for dir in ['../'] + sorted(subtree.keys(), key=str.lower):
             if not dir: continue
             #if not os.path.join(path, dir) in files_by_dir.keys(): continue
-            if path and '../' != dir and \
+            if '../' != dir and \
                                 os.path.join(path, dir) in files_by_dir.keys():
                 subfiles = files_by_dir[os.path.join(path, dir)]
             else:
@@ -91,7 +100,7 @@ def html_device(name, files_by_dir, real_root, sizes):
                     }))
             root.append(make_elem_dir(dir, subfiles, os.path.join(path, dir),
                                         real_root, sizes))
-        for file in sorted(files):
+        for file in sorted(files, key=cmp_lower):
             if file[2].get('video', False):
                 width = file[2]['video'][0]['width']
                 height = file[2]['video'][0]['height']
@@ -235,6 +244,11 @@ def devices_index():
 
 def legal():
     root = (E.div(
+        E.script("""$(document).load(function(){
+            $('#autor_div').hide();
+            $('#autor_div').fadeIn();
+            $('#autor_div').slideDown();
+        });""", {'type': 'text/javascript'}),
         E.h1(_('Legal y licencia')),
         E.div(
             E.a('Nekmo Software 2011',

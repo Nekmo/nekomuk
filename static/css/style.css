@@ -120,6 +120,11 @@ a:visited {
     overflow: hidden;
 }
 
+#content #columns_info span {
+    font-weight: bold;
+    color: #49595e;
+}
+
 #content.view_list_details .filediv:hover {
     background: #e6eef2;
 }
