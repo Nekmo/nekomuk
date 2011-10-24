@@ -45,6 +45,8 @@ def search_files(label, path, exts, callback, filter_dir, filter_filename):
         size_by_dir[root] = total_size
         for dir in dirs:
             files_list.append((dir, root_, {'size': 0, 'type': 'dir'}))
+    sys.stdout.write("\x08" * 80)
+    sys.stdout.flush()
     sys.stdout.write(' ' * 80)
     sys.stdout.flush()
     return sorted(files_list), files_by_dir, root_path, size_by_dir

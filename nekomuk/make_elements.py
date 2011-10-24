@@ -51,7 +51,12 @@ def make_subdirs(tree, path, dirname, files_by_dir, device, real_root, sizes):
             if not path_part: path_parts.remove('')
         sub_root = (len(path_parts) + 2) * '../'
         root = etree.Element('div', {'class': 'files'})
-        for dir in ['../'] + tree.keys():
+        root.append((E.div('',
+            E.span(unicode(_('Nombre')), {'class': 'name'}),
+            E.span(unicode(_('Tamaño')), {'class': 'size'}),
+            E.span(unicode(_('Tam. predominante')), {'class': 'mean_size'}),
+        {'id': 'columns_info', 'class': 'filediv'})))
+        for dir in ['../'] + sorted(tree.keys(), key=str.lower):
             if not dir: continue
             if path and '../' != dir:
                 subfiles = files_by_dir[os.path.join(path, dir)]
