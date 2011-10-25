@@ -3,6 +3,7 @@ import os
 import sys
 from lxml.builder import E
 from lxml import etree
+from gettext import gettext as _
 from . filesize import str_size
 from . get_file_info import get_video_info, get_dir_info
 from . render_html import render_html
