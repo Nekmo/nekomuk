@@ -18,13 +18,14 @@ def search_files(label, path, exts, callback, filter_dir, filter_filename):
     last_t = int(time.time())
     ignore_dirs = []
     for root, dirs, files in os.walk(root_path):
-        if filter_dir and not re.match(filter_dir, os.path.split(root)[1]):
-            ignore_dirs.append(root)
+        root_ = root.replace(root_path, '', 1)
+        if (root_ and filter_dir and \
+                            not re.match(filter_dir, os.path.split(root_)[1])):
+            ignore_dirs.append(root_)
             continue
         for ignore_dir in ignore_dirs:
-            if root.startswith(ignore_dir): continue
+            if root_.startswith(ignore_dir): continue
         total_size = 0
-        root_ = root.replace(root_path, '', 1)
         for file in files:
             if not file.split('.')[-1] in exts:
                 continue
