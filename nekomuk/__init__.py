@@ -9,7 +9,7 @@ import json
 import time
 import logging
 from kaa import metadata
-from operator import itemgetter
+from operator import itemgetter, attrgetter
 from lxml.builder import E
 from lxml import etree
 from gettext import gettext as _
@@ -36,6 +36,9 @@ ASPECTS = {1.3333333333333333: '4:3', 1.7777777777777777: '16:9', 1: '1:1'}
 
 def cmp_lower(elements):
     return elements[0].lower()
+
+def sorted_device(xml_elem):
+    return xml_elem.attrib['device']
 
 def new_html():
     os.mkdir('html')
@@ -216,7 +219,7 @@ def make_index(name, files, real_root):
 def devices_index():
     root = etree.Element('div')
     devices = etree.Element('ul', id='devices')
-    for device in os.listdir('html/devices/'):
+    for device in sorted(os.listdir('html/devices/')):
         if device == 'index.html': continue
         device_elem = (E.li(
             E.a(parse.unquote(device), {
@@ -307,7 +310,7 @@ def html_build(cfg):
     filter_dir = cfg.findall('filter_dir')[0].text
     filter_filename = cfg.findall('filter_filename')[0].text
     devices_files = {}
-    for dir_ in cfg.findall('dirs/dir'):
+    for dir_ in sorted(cfg.findall('dirs/dir'), key=sorted_device):
         logging.info(_('Construyendo índice de "%s"') % dir_.attrib['device'])
         if dir_.text.startswith('/'): dir_.text = dir_.text[1:]
         files, files_by_dir, real_root, sizes = search_files(dir_.attrib['device'],
