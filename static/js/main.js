@@ -280,7 +280,9 @@ $(document).ready(function(){
         var devices = kwargs['devices'].split(';')
         var path = kwargs['path'];
         $('#content').html('');
+        $('#content').append($('<div class="dirs"></div>'));
         $('#content').append($('<div class="files"></div>'));
+        var in_list = new Array();
         $.each(devices, function(i, device){
             $.ajax($('#sub_root').text() + 'devices/' + encodeURIComponent(encodeURIComponent(device)) + '/' + path, {
                 cache: true,
@@ -291,19 +293,35 @@ $(document).ready(function(){
                     data = data.replace(/<\/script>/g, '</scr_ipt>');
                     data = $('<div />').html(data).find('#content .files > .filediv');
                     $(data).each(function(i, filediv){
-                        var img_src = $(filediv).find('.icon').attr('src');
-                        img_src = $('#sub_root').text() + img_src.replace(/\.\.\//g, '');
-                        $(filediv).find('.icon').attr('src', img_src);
-                        if($(filediv).find('a')){
-                            var href = path.replace('/index.html', '') + '/' + $(filediv).find('a').attr('href');
-                            href = '#!merge?devices=' + encodeURIComponent(kwargs['devices']) + '&path=' + encodeURIComponent(href);
-                            $(filediv).find('a').attr('href', href);
+                        if($.inArray($(filediv).find('.name').text(), in_list) == -1){
+                            img_src = $(filediv).find('.icon').attr('src');
+                            if(img_src){
+                                img_src = $('#sub_root').text() + img_src.replace(/\.\.\//g, '');
+                            }
+                            $(filediv).find('.icon').attr('src', img_src);
+                            if($(filediv).find('a')){
+                                var href = path.replace('/index.html', '') + '/' + $(filediv).find('a').attr('href');
+                                href = '#!merge?devices=' + encodeURIComponent(kwargs['devices']) + '&path=' + encodeURIComponent(href);
+                                $(filediv).find('a').attr('href', href);
+                            }
+                            if($(filediv).is('.dir')){
+                                $('#content .dirs').append(filediv);
+                            } else {
+                                $('#content .files').append(filediv);
+                            }
+                            in_list.append($(filediv).find('.name').text());
                         }
-                        $('#content .files').append(filediv);
                     });
                 }
             });
         });
+        $('#content .dirs').sortElements(function(a, b){
+            return $(a).find('.name').text() > $(b).find('.name').text() ? 1 : -1;
+        });
+        $('#content .files').sortElements(function(a, b){
+            return $(a).find('.name').text() > $(b).find('.name').text() ? 1 : -1;
+        });
+        $('#content .dirs').prepend($('#content #columns_info'));
     }
     
     ajax_pages = {'merge': merge}
@@ -368,4 +386,50 @@ $(document).ready(function(){
         var inicio = new Date().getTime();
         while ((new Date().getTime() - inicio) < millisegundos);
     }
+    
+    jQuery.fn.sortElements = (function(){
+    
+        var sort = [].sort;
+    
+        return function(comparator, getSortable) {
+    
+            getSortable = getSortable || function(){return this;};
+    
+            var placements = this.map(function(){
+    
+                var sortElement = getSortable.call(this),
+                    parentNode = sortElement.parentNode,
+    
+                    // Since the element itself will change position, we have
+                    // to have some way of storing its original position in
+                    // the DOM. The easiest way is to have a 'flag' node:
+                    nextSibling = parentNode.insertBefore(
+                        document.createTextNode(''),
+                        sortElement.nextSibling
+                    );
+    
+                return function() {
+    
+                    if (parentNode === this) {
+                        throw new Error(
+                            "You can't sort elements if any one is a descendant of another."
+                        );
+                    }
+    
+                    // Insert before flag:
+                    parentNode.insertBefore(this, nextSibling);
+                    // Remove flag:
+                    parentNode.removeChild(nextSibling);
+    
+                };
+    
+            });
+    
+            return sort.call(this, comparator).each(function(i){
+                placements[i].call(getSortable.call(this));
+            });
+    
+        };
+    
+    })();
 });

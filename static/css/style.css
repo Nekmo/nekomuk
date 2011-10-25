@@ -113,7 +113,7 @@ a:visited {
 /*     margin: 0 auto 0 auto; */
 }
 
-#content > .files {
+#content > .files, #content > .dirs {
     width: 95%;
     min-width: 800px;
     margin: 0 auto 0 auto;
@@ -139,7 +139,7 @@ a:visited {
 #content.view_list_details .filediv .mean_size {
     float: right;
     color: #4f4f4f;
-    width: 150px;
+    width: 200px;
     display: block;
     text-align: right;
 }
