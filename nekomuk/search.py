@@ -23,8 +23,10 @@ def search_files(label, path, exts, callback, filter_dir, filter_filename):
                             not re.match(filter_dir, os.path.split(root_)[1])):
             ignore_dirs.append(root_)
             continue
+        in_ignore_dirs = False
         for ignore_dir in ignore_dirs:
-            if root_.startswith(ignore_dir): continue
+            if root_.startswith(ignore_dir): in_ignore_dirs = True
+        if in_ignore_dirs: continue
         total_size = 0
         for file in files:
             if not file.split('.')[-1] in exts:
