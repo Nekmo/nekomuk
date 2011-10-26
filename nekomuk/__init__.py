@@ -213,8 +213,7 @@ def make_index(name, files, real_root):
             try:
                 f.write(json.dumps(results))
             except Exception as e:
-                print(term)
-                print(e)
+                pass
 
 def devices_index():
     root = etree.Element('div')
@@ -344,3 +343,4 @@ def html_build(cfg):
     except:
         pass
     shutil.copytree(os.path.join(main_dir, 'static'), 'html/static')
+    print('Terminado de indexar todos los dispositivos.')

@@ -59,7 +59,7 @@ def make_subdirs(tree, path, dirname, files_by_dir, device, real_root, sizes):
         {'id': 'columns_info', 'class': 'filediv'})))
         for dir in ['../'] + sorted(tree.keys(), key=str.lower):
             if not dir: continue
-            if path and '../' != dir:
+            if dir in files_by_dir.keys() and '../' != dir:
                 subfiles = files_by_dir[os.path.join(path, dir)]
             else:
                 subfiles = []
