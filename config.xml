@@ -1,0 +1,15 @@
+<config>
+  <extensions>
+    <extension>mkv</extension>
+    <extension>mp4</extension>
+    <extension>avi</extension>
+    <extension>mov</extension>
+    <extension>wmv</extension>
+  </extensions>
+  <version>0.06</version>
+  <filter_dir/>
+  <filter_filename/>
+  <dirs>
+    <dir device="/home">/nekmo/videos/</dir>
+  </dirs>
+  <stats><stat path="" name="anime"><devices/><icons><icon name="%2Fusr%2Fshare%2Ficons%2Foxygen%2F32x32%2Fplaces%2Ffolder-green.png" list="1" legend="Terminadas de ver" /></icons></stat></stats></config>

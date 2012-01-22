@@ -39,7 +39,7 @@ if sys.version_info < (3,0):
     sys.setdefaultencoding('utf8')
     input = raw_input
 
-__version__ = '0.05'
+__version__ = '0.06'
 
 EXTS = ['mkv', 'mp4', 'avi', 'mov', 'wmv']
 
@@ -56,7 +56,10 @@ if __name__ == '__main__':
                         help='Establecer el nivel a solo errores del programa.')
     parser.add_argument('--not-update', dest='not_update', action='store_const',
                         const=True, default=False,
-                        help='No actualizar el árbol de directorios..')
+                        help='No actualizar el árbol de directorios.')
+    parser.add_argument('--add-stat', dest='add_stat', action='store_const',
+                        const=True, default=False,
+                        help='Añadir un nuevo proyecto de estadística.')
     args = parser.parse_args()
     logging.basicConfig(level=args.loglevel, format='%(levelname)-8s %(message)s')
     if not os.path.exists('config.xml'):
@@ -69,10 +72,10 @@ if __name__ == '__main__':
         while True:
             if not dirs:
                 cprint(_('Porfavor, introduza la ruta al directorio con los'\
-                    ' archivos de vídeo.'), 'blue')
+                    ' archivos de vídeo.'), 'green')
             else:
                 cprint(_('Si desea añadir un directorio más, escríbalo a '\
-                        'continuación. De lo contrario, pulse Enter.'), 'blue')
+                        'continuación. De lo contrario, pulse Enter.'), 'green')
             output = ''
             while not output:
                 output = input('>> ')
@@ -101,6 +104,8 @@ if __name__ == '__main__':
         version = etree.Element('version')
         version.text = __version__
         root.append(version)
+        # Se añade el grupo de estadísticas
+        root.append(etree.Element('stats'))
         # Filtros regex para nombres y directorios
         filter_dir = etree.Element('filter_dir')
         filter_dir.text = ''
@@ -120,7 +125,72 @@ if __name__ == '__main__':
         root.append(dirs_elem)
         with open('config.xml', 'w') as f:
             f.write(etree.tostring(root, pretty_print=True))
-    cfg = etree.parse('config.xml')
-    if not args.not_update:
+    cfg = etree.parse('config.xml').getroot()
+    if cfg.find('version').text != __version__:
+        cprint(_('La versión de Nekomuk difiere con la de la configuración '\
+                'del proyecto. ¿Desea actualizar ahora?'), 'yellow')
+        cprint(_('Versión de Nekomuk %s. Versión del proyecto: %s') % \
+                (__version__, cfg.find('version').text), 'yellow')
+        if (input(_('[Y/n]')))[0].lower() == _('n'):
+            sys.exit(0)
+        else:
+            from nekomuk import update
+    if args.add_stat:
+        name = ''
+        while not name:
+            cprint(_('Introduzca un nombre para el proyecto de estadísticas.'),
+                    'green')
+            name = input('>> ')
+        devices = []
+        cprint(_('Introduza los dispositivos en los que se buscará. Deje en'\
+                ' blanco para añadir todos.'),
+                'green')
+        device = input('>> ')
+        if device:
+            devices.append(device)
+            while device:
+                cprint(_('Si lo desea, añada otro. Enter para cancelar.'),
+                        'green')
+                if device: devices.append(device)
+        cprint(_('En caso de querer buscar dentro de una ruta específica '\
+                'dentro de los dispositivos, introdúzcala o pulse enter.'),
+                'green')
+        path_device = input('>> ')
+        icons = {}
+        while True:
+            cprint(_('Si lo desea, puede añadir estadísticas por icono de '\
+                    'carpeta. Introduza el nombre de archivo del icono en '\
+                    'share/icons/ para continuar. Deje en blanco para cancelar'),
+                    'green')
+            icon = input('>> ')
+            if not icon: break
+            icons[icon] = {}
+            cprint(_('Introduza la leyenda para el icono (serie vista, serie '\
+                    'pendiente...).'), 'green')
+            icons[icon]['legend'] = input('>> ')
+            cprint(_('¿Desea listar los directorios con este icono de carpeta?'),
+                    'green')
+            if (input(_('[Y/n]')))[0].lower() == _('n'):
+                icons[icon]['list'] = '0'
+            else:
+                icons[icon]['list'] = '1'
+        stat_elem = etree.Element('stat', name=name, path=path_device)
+        devices_elem = etree.Element('devices')
+        for device in devices:
+            device_elem = etree.Elem('device')
+            device_elem.text = device
+            devices_elem.append(device_elem)
+        stat_elem.append(devices_elem)
+        icons_elem = etree.Element('icons')
+        for icon_name, icon_data in icons.items():
+            icon_elem = etree.Element('icon', name=icon_name,
+                        legend=icon_data['legend'], list=icon_data['list'])
+            icons_elem.append(icon_elem)
+        stat_elem.append(icons_elem)
+        root = etree.parse('config.xml')
+        root.findall('stats')[0].append(stat_elem)
+        with open('config.xml', 'w') as f:
+            f.write(etree.tostring(root, pretty_print=True))
+        cfg = etree.parse('config.xml')
+    elif not args.not_update:
         html_build(cfg)
-    

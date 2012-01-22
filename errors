@@ -1,0 +1,21 @@
+sh: -c: línea 0: error sintáctico cerca del elemento inesperado `('
+sh: -c: línea 0: `ffmpeg -y -ss 388 -i '/media/WD 1TiB/Being Human (US)/Being Human (US) 1x08 Children Shouldn't Play With Undead Things.avi' -f mjpeg -vframes 1 -s 120x67 -an 'html/devices/WD+1TiB%2F/Being Human (US)/Being Human (US) 1x08 Children Shouldn't Play With Undead Things.avi.jpg' 2> /dev/null'
+Traceback (most recent call last):
+  File "Nekomuk.py", line 107, in <module>
+    html_build(cfg)
+  File "/home/nekmo/nekomuk/nekomuk/__init__.py", line 207, in html_build
+    files_by_dir, real_root, sizes)
+  File "/home/nekmo/nekomuk/nekomuk/__init__.py", line 145, in html_device
+    make_subdirs(tree, '', dirname, files_by_dir, name, real_root, sizes)
+  File "/home/nekmo/nekomuk/nekomuk/make_elements.py", line 62, in make_subdirs
+    os.path.join(path, dir), real_root, sizes))
+  File "/home/nekmo/nekomuk/nekomuk/make_elements.py", line 33, in make_elem_dir
+    E.a(dir, {'href': parse.quote(dir_url), 'class': 'name'}),
+  File "/usr/lib/python2.7/site-packages/lxml/builder.py", line 222, in __call__
+    v = t(elem, item)
+  File "/usr/lib/python2.7/site-packages/lxml/builder.py", line 185, in add_text
+    elem.text = (elem.text or "") + item
+  File "lxml.etree.pyx", line 916, in lxml.etree._Element.text.__set__ (src/lxml/lxml.etree.c:36134)
+  File "apihelpers.pxi", line 721, in lxml.etree._setNodeText (src/lxml/lxml.etree.c:17141)
+  File "apihelpers.pxi", line 1366, in lxml.etree._utf8 (src/lxml/lxml.etree.c:22211)
+ValueError: All strings must be XML compatible: Unicode or ASCII, no NULL bytes or control characters

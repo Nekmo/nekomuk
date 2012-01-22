@@ -93,6 +93,7 @@ def get_dir_info(files, path, real_root):
     # Para los iconos, obtener la ruta relativa.
     path_parts = path.split(os.sep)
     icon = ''
+    icon_name = ''
     for path_part in tuple(path_parts):
         if not path_part: path_parts.remove('')
     root = (len(path_parts) + 1) * '../'
@@ -114,6 +115,7 @@ def get_dir_info(files, path, real_root):
         dst = os.path.join('html', 'share', 'icons', parse.quote_plus(icon))
         if not os.path.exists(dst):
             shutil.copy(icon, dst)
+        icon_name = parse.quote_plus(icon)
         icon = 'share/icons/' + parse.quote(parse.quote_plus(icon))
         icon = root + icon
     else:
@@ -126,4 +128,5 @@ def get_dir_info(files, path, real_root):
     return {
         'mean': mean,
         'icon': icon,
+        'icon_name': icon_name,
     }

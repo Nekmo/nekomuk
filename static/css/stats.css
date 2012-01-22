@@ -1,0 +1,81 @@
+h1, h2, h3, h4 {
+    clear: both;
+    margin: 6px;
+}
+
+h1 {
+    color: #64696c;
+    text-transform: capitalize;
+}
+h2, h3 {
+    color: #696e71;
+}
+h4 {
+    color: #a5a5a5;
+    font-weight: normal;
+}
+
+#devices_index {
+    list-style: url(../img/hdd.png);
+    margin: 9px;
+}
+
+.graphs {
+    margin-left: 10px;
+    float: left;
+}
+
+.graphs > div {
+    width: 250px !important;
+    height: 100px !important;
+    border: 1px dashed gainsboro;
+}
+
+body > #panel {
+    display: none;
+}
+
+body > #content {
+    margin-left: 20px;
+}
+
+.blocks {
+    clear: both;
+}
+
+.info {
+    font-weight: bold;
+    margin-right: 15px;
+    color: #898f92;
+}
+
+.block_info {
+    float: left;
+    padding-right: 20px;
+}
+
+.files_list_block {
+    clear: both !important;
+}
+.files_list_block .info {
+    margin-right: 5px !important;
+}
+
+.files_list {
+    margin: 6px;
+    list-style: none;
+    padding: 0px;
+    padding-left: 6px;
+}
+
+.files_list li {
+    background: url(../img/folder16.png) no-repeat;
+    height: 16px;
+    padding-left: 23px;
+}
+
+.toggle {
+    color: #be6e6e;
+    font-size: 13px;
+    cursor: pointer;
+}

@@ -21,7 +21,7 @@ renders = {}
 renders['base'] = open(os.path.join(main_dir, 'templates/base.html')).read()
     
 def render_html(content, path, device, sub_root, title='', top='', render='base',
-                search_mode=1):
+                search_mode=1, css=''):
     if not title:
         title = '[%s]%s' % (device, path)
     title_elem = etree.Element('title', id='title')
@@ -104,13 +104,15 @@ def render_html(content, path, device, sub_root, title='', top='', render='base'
             {'title': '#panel'}),
         {'id': 'locals'})
     )
-            
+    
+    if css:
+        css = '<link href="%s" rel="stylesheet" type="text/css"></link>' % css
             
     return renders[render] % {
         'content': etree.tostring(content),
         'title': etree.tostring(title_elem),
         'js': '',
-        'css': '',
+        'css': css,
         'locals': etree.tostring(locals),
         'sub_root': etree.tostring((E.div(root, {'id': 'sub_root'}))),
         'device': etree.tostring((E.div(parse.quote_plus(device),

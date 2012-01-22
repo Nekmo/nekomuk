@@ -8,6 +8,7 @@ import glob
 import json
 import time
 import logging
+import copy
 from kaa import metadata
 from operator import itemgetter, attrgetter
 from lxml.builder import E
@@ -46,6 +47,7 @@ def new_html():
     os.mkdir('html/s')
     os.mkdir('html/share/')
     os.mkdir('html/share/icons')
+    os.mkdir('html/stats/')  
 
 #def recursive_remove(device, tree):
     #os.path.split('html', 'devices', device, )
@@ -215,6 +217,64 @@ def make_index(name, files, real_root):
             except Exception as e:
                 pass
 
+def make_stat(stat, device_name, real_root, files_by_dir):
+    find_text = etree.XPath("//text()") # filtro XPath para buscar
+    name = stat.attrib['name']
+    path_device = stat.attrib['path']
+    icons = {}
+    icons_options = {}
+    if not os.path.exists('html/stats/%s/' % name):
+        os.makedirs('html/stats/%s/devices' % name)
+    info = {
+        'containers': {},
+        'video_codecs': {},
+        'dirs': 0,
+        'files': 0,
+        'total_size': 0,
+        'total_t': 0,
+        'dirs_list': [],
+        }
+    for icon in stat.findall('icons/icon'):
+        icons[icon.attrib['name']] = copy.deepcopy(info)
+        icons_options[icon.attrib['name']] = {
+            'list': icon.attrib['list'],
+            'legend': icon.attrib['legend'],
+            }
+    stats = info
+    for dir, files in files_by_dir.items():
+        if dir.startswith(path_device):
+            dir_info = get_dir_info(files, os.path.join(real_root, dir), real_root)
+            icon = dir_info['icon_name']
+            add_stats_to = [stats]
+            if icon in icons.keys():
+                add_stats_to.append(icons[icon])
+                if icons_options[icon]['list'] == '1':
+                    icons[icon]['dirs_list'].append(os.path.split(dir)[-1])
+                icons[icon]['about'] = icons_options[icon]
+            for add_stat_to in add_stats_to:
+                add_stat_to['dirs'] += 1
+                add_stat_to['dirs_list'].append(os.path.split(dir)[-1])
+                add_stat_to['files'] += len(files)
+                for file in files:
+                    if file[2].get('video', False):
+                        length = file[2]['video'][0].get('length', 0)
+                        container = file[2].get('type', '?')
+                        video_codec = file[2]['video'][0].get('codec', '?')
+                    else:
+                        length = 0
+                        video_codec = container = '?'
+                    if not container in add_stat_to['containers'].keys():
+                        add_stat_to['containers'][container] = 0
+                    if not video_codec in add_stat_to['video_codecs'].keys():
+                        add_stat_to['video_codecs'][video_codec] = 0
+                    add_stat_to['containers'][container] += 1
+                    add_stat_to['video_codecs'][video_codec] += 1
+                    add_stat_to['total_t'] += length
+                    add_stat_to['total_size'] += file[2]['size']
+    with open('html/stats/%s/devices/%s.json' % \
+                                (name, parse.quote_plus(device_name)), 'w') as f:
+        f.write(json.dumps({'icons': icons, 'stats': stats}))
+
 def devices_index():
     root = etree.Element('div')
     devices = etree.Element('ul', id='devices')
@@ -248,6 +308,81 @@ def devices_index():
         html = render_html(root, '', '', '')
         f.write(html)
 
+def stats_index():
+    stats_elem = etree.Element('ul', id='stats_index')
+    stats = []
+    if os.path.exists('html/stats/index.html'):
+        os.remove('html/stats/index.html')
+    for stat_dir in os.listdir('html/stats/'):
+        elem = (E.li(E.a(stat_dir, {'href': stat_dir})))
+        stats_elem.append(elem)
+        stats.append(stat_dir)
+    root = (E.div(
+        E.h1(unicode(_('Estadísticas'))),
+        stats_elem,
+    {'id': 'content'}))
+    with open('html/stats/index.html', 'w') as f:
+        f.write(render_html(root, '', 'html/stats', '../'))
+    for stat in stats:
+        devices_elem = etree.Element('ul', id='devices_index')
+        for dir in os.listdir('html/stats/%s/devices/' % stat):
+            device = etree.Element('li', title=parse.quote_plus(dir))
+            device.text = parse.unquote('.'.join(unicode(dir).split('.')[:-1]))
+            devices_elem.append(device)
+        root = (E.div(
+            E.script("""\
+            $(document).ready(function(){
+                $.getScript($('#sub_root').text() + "static/js/jquery.flot.min.js");
+                $.getScript($('#sub_root').text() + "static/js/jquery.flot.pie.min.js");
+                $.getScript($('#sub_root').text() + 'static/js/stats.js');
+            });""", {'type': 'text/javascript'}),
+            E.div(
+                E.div(
+                    E.div(
+                        E.h4('Contenedores'),
+                        E.div('', {'class': 'containers'}),
+                    {'class': 'graphs'}),
+                    E.div(
+                        E.h4(unicode('Códecs de vídeo')),
+                        E.div('', {'class': 'video_codecs'}),
+                    {'class': 'graphs'}),
+                    E.div(
+                        E.div(
+                            E.span(unicode('Duración total'), {'class': 'info'}),
+                            E.span('0', {'class': 'total_t', 'title': '0'}),
+                        {'class': 'block_info'}),
+                        E.div(
+                            E.span(unicode('Tamaño total'), {'class': 'info'}),
+                            E.span('0', {'class': 'total_size', 'title': '0'}),
+                        {'class': 'block_info'}),
+                        E.div(
+                            E.span('Directorios', {'class': 'info'}),
+                            E.span('0', {'class': 'sdirs', 'title': '0'}),
+                        {'class': 'block_info'}),
+                        E.div(
+                            E.span('Archivos', {'class': 'info'}),
+                            E.span('0', {'class': 'sfiles', 'title': '0'}),
+                        {'class': 'block_info'}),
+                        E.div(
+                            E.span('Listado de directorios', {'class': 'info'}),
+                            E.span('Mostrar', {'class': 'toggle', 'title': 'Ocultar'}),
+                            E.ul('', {'class': 'files_list hide'}),
+                        {'class': 'files_list_block'}),
+                    {'class': 'blocks'}),
+                    {'class': 'stats_box'}
+                ),
+            {'class': 'hide', 'id': 'stats_box_template'}),
+            E.h1(stat),
+            E.h2('Dispositivos analizados'),
+            devices_elem,
+            E.h2(unicode(_('Estadísticas por tipo'))),
+            E.div('', {'id': 'stats_special'}),
+            E.h2(unicode(_('Estadísticas totales'))),
+            E.div('', {'id': 'stats_total'}),
+        {'id': 'content'}))
+        with open('html/stats/%s/index.html' % stat, 'w') as f:
+            f.write(render_html(root, '', 'html/stats/%s' % stat, '../../',
+                    css='../../static/css/stats.css'))
 def legal():
     root = (E.div(
         E.script("""$(document).load(function(){
@@ -328,6 +463,13 @@ def html_build(cfg):
                     files_by_dir, real_root, sizes)
         make_index('/'.join([dir_.attrib['device'], dir_.text]),
                     files, real_root)
+        # Crear estadísticas para el dispositivo, si está incluido en el listado
+        find_text = etree.XPath("//text()")
+        device_name = '/'.join([dir_.attrib['device'], dir_.text])
+        for stat in cfg.findall('stats/stat'):
+            devices_in_stat = stat.findtext('devices/device')
+            if not devices_in_stat or dir_.attrib['device'] in devices_in_stat:
+                make_stat(stat, device_name, real_root, files_by_dir)
         sys.stdout.write(' ' * 80)
         sys.stdout.flush()
         sys.stdout.write("\x08" * 80)
@@ -335,6 +477,7 @@ def html_build(cfg):
         sys.stdout.write(_('Terminado\n'))
         sys.stdout.flush()
     # Se crea el índice de particiones
+    stats_index()
     devices_index()
     # Añadir nota legal
     legal()
