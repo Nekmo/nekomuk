@@ -26,6 +26,5 @@
     <dir device="nekhd1">/</dir>
     <dir device="nekhd2">/</dir>
     <dir device="nekhd3">/</dir>
-    <dir device="nekhd4">/</dir>
   </dirs>
 </config>

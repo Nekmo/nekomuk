@@ -6,11 +6,12 @@ import __main__
 import shutil
 import glob
 import json
+<<<<<<< local
+=======
 import time
 import logging
-import copy
+>>>>>>> other
 from kaa import metadata
-from operator import itemgetter, attrgetter
 from lxml.builder import E
 from lxml import etree
 from gettext import gettext as _
@@ -35,29 +36,15 @@ else:
 
 ASPECTS = {1.3333333333333333: '4:3', 1.7777777777777777: '16:9', 1: '1:1'}
 
-def cmp_lower(elements):
-    return elements[0].lower()
-
-def sorted_device(xml_elem):
-    return xml_elem.attrib['device']
-
 def new_html():
     os.mkdir('html')
     os.mkdir('html/devices')
     os.mkdir('html/s')
     os.mkdir('html/share/')
     os.mkdir('html/share/icons')
-    os.mkdir('html/stats/')  
-
-#def recursive_remove(device, tree):
-    #os.path.split('html', 'devices', device, )
-
+    
 def html_device(name, files_by_dir, real_root, sizes):
     dirname = 'html/devices/' + parse.quote_plus(name)
-    # Se borran los archivos index del device de la carpeta del proyecto
-    for root, dirs, files in os.walk(dirname):
-        if 'index.html' in files:
-            os.remove(os.path.join(root, 'index.html'))
     # Se reconstruye el árbol de directorios
     tree = {}
     for path in files_by_dir.keys():
@@ -89,16 +76,11 @@ def html_device(name, files_by_dir, real_root, sizes):
                 subtree = subtree[dir]
         else:
             subtree = subtree
-        root.append((E.div('',
-            E.span(unicode(_('Nombre')), {'class': 'name'}),
-            E.span(unicode(_('Tamaño')), {'class': 'size'}),
-            E.span(unicode(_('Tam. predominante')), {'class': 'mean_size'}),
-        {'id': 'columns_info', 'class': 'filediv'})))
         # Se añaden primero los directorios. Si hay.
-        for dir in ['../'] + sorted(subtree.keys(), key=str.lower):
+        for dir in ['../'] + sorted(subtree.keys()):
             if not dir: continue
             #if not os.path.join(path, dir) in files_by_dir.keys(): continue
-            if '../' != dir and \
+            if path and '../' != dir and \
                                 os.path.join(path, dir) in files_by_dir.keys():
                 subfiles = files_by_dir[os.path.join(path, dir)]
             else:
@@ -109,7 +91,7 @@ def html_device(name, files_by_dir, real_root, sizes):
                     }))
             root.append(make_elem_dir(dir, subfiles, os.path.join(path, dir),
                                         real_root, sizes))
-        for file in sorted(files, key=cmp_lower):
+        for file in sorted(files):
             if file[2].get('video', False):
                 width = file[2]['video'][0]['width']
                 height = file[2]['video'][0]['height']
@@ -123,17 +105,18 @@ def html_device(name, files_by_dir, real_root, sizes):
                 else:
                     width = height = '???'
                 container = str(file[2].get('type', '?'))
-                length = file[2]['length']
-                if length:
-                    length = str(int(length / 60)) + _(' mins.')
-                else:
-                    length = '?'
+                length = str(int(file[2].get('length', 0) / 60)) + _(' mins.')
+<<<<<<< local
+                video_codec = file[2]['video'][0].get('codec', '?')
+                audio_codec = file[2]['audio'][0].get('codec', '?')
+=======
                 video_codec = file[2]['video'][0]['codec']
                 audio_codec = file[2]['audio'][0]['codec']
                 if not video_codec:
                     video_codec = '?'
                 if not audio_codec:
                     audio_codec = '?'
+>>>>>>> other
                 fps = file[2]['video'][0].get('fps', 0)
                 if fps:
                     fps = str(int(fps))
@@ -178,19 +161,7 @@ def html_device(name, files_by_dir, real_root, sizes):
         with open(os.path.join(dirname, path, 'index.html'), 'w') as f:
             f.write(html)
     make_subdirs(tree, '', dirname, files_by_dir, name, real_root, sizes)
-    
-    # Eliminar "directorios fantasma" (que han sido eliminados).
-    for root, dirs, files in os.walk(dirname):
-        root = root.replace(dirname, '')
-        for dir in dirs:
-            if root:
-                path_dir = os.path.join(root, dir)
-            else:
-                path_dir = dir
-            if path_dir.startswith('/'): path_dir = path_dir[1:]
-            if not path_dir in files_by_dir.keys():
-                shutil.rmtree(os.path.join(dirname, path_dir))
-
+        
 def make_index(name, files, real_root):
     dirname = 'html/s/' + parse.quote_plus(name)
     if os.path.exists(dirname):
@@ -206,87 +177,31 @@ def make_index(name, files, real_root):
             file[0] = file[0].replace(f, t)
         for word in file[0].split(' '):
             if not word[0:3] in index.keys(): index[word[0:3]] = {}
+<<<<<<< local
+            if not word in index[word[0:3]].keys(): index[word[0:3]][word] = []
+            index[word[0:3]][word].append((file[0].split(' '), file[1],
+                                        orig_filename, file[2]['type']))
+=======
             if not word in index[word[0:3]].keys(): index[word[0:3]][word] = {}
             key = '/'.join((file[1], orig_filename))
             index[word[0:3]][word][key] = (file[0].split(' '), file[1],
                                         orig_filename, file[2]['type'])
+>>>>>>> other
     for term, results in index.items():
         with open(os.path.join(dirname, term + '.json'), 'w') as f:
             try:
                 f.write(json.dumps(results))
             except Exception as e:
-                pass
-
-def make_stat(stat, device_name, real_root, files_by_dir):
-    find_text = etree.XPath("//text()") # filtro XPath para buscar
-    name = stat.attrib['name']
-    path_device = stat.attrib['path']
-    icons = {}
-    icons_options = {}
-    if not os.path.exists('html/stats/%s/' % name):
-        os.makedirs('html/stats/%s/devices' % name)
-    info = {
-        'containers': {},
-        'video_codecs': {},
-        'dirs': 0,
-        'files': 0,
-        'total_size': 0,
-        'total_t': 0,
-        'dirs_list': [],
-        }
-    for icon in stat.findall('icons/icon'):
-        icons[icon.attrib['name']] = copy.deepcopy(info)
-        icons_options[icon.attrib['name']] = {
-            'list': icon.attrib['list'],
-            'legend': icon.attrib['legend'],
-            }
-    stats = info
-    for dir, files in files_by_dir.items():
-        if dir.startswith(path_device):
-            dir_info = get_dir_info(files, os.path.join(real_root, dir), real_root)
-            icon = dir_info['icon_name']
-            add_stats_to = [stats]
-            if icon in icons.keys():
-                add_stats_to.append(icons[icon])
-                #if icons_options[icon]['list'] == '1':
-                    #icons[icon]['dirs_list'].append(os.path.split(dir)[-1])
-                icons[icon]['about'] = icons_options[icon]
-            for add_stat_to in add_stats_to:
-                add_stat_to['dirs'] += 1
-                add_stat_to['dirs_list'].append(os.path.split(dir)[-1])
-                add_stat_to['files'] += len(files)
-                for file in files:
-                    if file[2].get('video', False):
-                        length = file[2]['video'][0].get('length', None)
-                        container = file[2].get('type', 'Desconocido')
-                        video_codec = file[2]['video'][0].get('codec', 'Desconocido')
-                    else:
-                        length = 0
-                        video_codec = container = '?'
-                    if video_codec == None:
-                        video_codec = 'Desconocido'
-                    if not container in add_stat_to['containers'].keys():
-                        add_stat_to['containers'][container] = 0
-                    if not video_codec in add_stat_to['video_codecs'].keys():
-                        add_stat_to['video_codecs'][video_codec] = 0
-                    if length == None:
-                        length = 24 * 60 # Tamaño por media
-                    add_stat_to['containers'][container] += 1
-                    add_stat_to['video_codecs'][video_codec] += 1
-                    add_stat_to['total_t'] += length
-                    add_stat_to['total_size'] += file[2]['size']
-    with open('html/stats/%s/devices/%s.json' % \
-                                (name, parse.quote_plus(device_name)), 'w') as f:
-        f.write(json.dumps({'icons': icons, 'stats': stats}))
+                print(term)
+                print(e)
 
 def devices_index():
     root = etree.Element('div')
     devices = etree.Element('ul', id='devices')
-    for device in sorted(os.listdir('html/devices/')):
-        if device == 'index.html': continue
+    for device in os.listdir('html/devices/'):
         device_elem = (E.li(
             E.a(parse.unquote(device), {
-                'href': 'devices/' + parse.quote_plus(device) + '/',
+                'href': 'devices/' + parse.quote_plus(device),
                 'title': device
                 }),
             E.input('', {
@@ -297,103 +212,23 @@ def devices_index():
         ))
         devices.append(device_elem)
     root.append(devices)
+<<<<<<< local
+    root.append((E.div('Unir seleccionados', {'class': 'merge'})))
+=======
     root.append((E.span(_('Unir seleccionados'), {'class': 'merge'})))
     time_str = _('Última actualización el día %d/%m/%y, a las %H:%M:%S %Z')
     root.append(E.div(unicode(time.strftime(time_str)), {'class': 't_update'}))
     root.append(E.a(unicode(_('Nekmo Software 2011 - Licencia de uso')),
             {'class': 'license', 'href': 'legal.html'}))
+>>>>>>> other
     with open('html/index.html', 'w') as f:
         html = render_html(root, '', '', '')
         f.write(html)
-    # Índice falso en devices
-    root = etree.Element('script', {'id': 'script', 'type': "text/javascript"})
-    root.text = 'window.location = "../index.html"'
-    with open('html/devices/index.html', 'w') as f:
-        html = render_html(root, '', '', '')
-        f.write(html)
+<<<<<<< local
+=======
 
-def stats_index():
-    stats_elem = etree.Element('ul', id='stats_index')
-    stats = []
-    if os.path.exists('html/stats/index.html'):
-        os.remove('html/stats/index.html')
-    for stat_dir in os.listdir('html/stats/'):
-        elem = (E.li(E.a(stat_dir, {'href': stat_dir})))
-        stats_elem.append(elem)
-        stats.append(stat_dir)
-    root = (E.div(
-        E.h1(unicode(_('Estadísticas'))),
-        stats_elem,
-    {'id': 'content'}))
-    with open('html/stats/index.html', 'w') as f:
-        f.write(render_html(root, '', 'html/stats', '../'))
-    for stat in stats:
-        devices_elem = etree.Element('ul', id='devices_index')
-        for dir in os.listdir('html/stats/%s/devices/' % stat):
-            device = etree.Element('li', title=parse.quote_plus(dir))
-            device.text = parse.unquote('.'.join(unicode(dir).split('.')[:-1]))
-            devices_elem.append(device)
-        root = (E.div(
-            E.script("""\
-        $.getScript($('#sub_root').text() + "static/js/jquery.flot.min.js", function(){
-            $.getScript($('#sub_root').text() + "static/js/jquery.flot.pie.min.js", function(){
-                $.getScript($('#sub_root').text() + 'static/js/stats.js');
-                });
-            });""", {'type': 'text/javascript'}),
-            E.div(
-                E.div(
-                    E.div(
-                        E.h4('Contenedores'),
-                        E.div('', {'class': 'containers'}),
-                    {'class': 'graphs'}),
-                    E.div(
-                        E.h4(unicode('Códecs de vídeo')),
-                        E.div('', {'class': 'video_codecs'}),
-                    {'class': 'graphs'}),
-                    E.div(
-                        E.div(
-                            E.span(unicode('Duración total'), {'class': 'info'}),
-                            E.span('0', {'class': 'total_t', 'title': '0'}),
-                        {'class': 'block_info'}),
-                        E.div(
-                            E.span(unicode('Tamaño total'), {'class': 'info'}),
-                            E.span('0', {'class': 'total_size', 'title': '0'}),
-                        {'class': 'block_info'}),
-                        E.div(
-                            E.span('Directorios', {'class': 'info'}),
-                            E.span('0', {'class': 'sdirs', 'title': '0'}),
-                        {'class': 'block_info'}),
-                        E.div(
-                            E.span('Archivos', {'class': 'info'}),
-                            E.span('0', {'class': 'sfiles', 'title': '0'}),
-                        {'class': 'block_info'}),
-                        E.div(
-                            E.span('Listado de directorios', {'class': 'info'}),
-                            E.span('Mostrar', {'class': 'toggle', 'title': 'Ocultar'}),
-                            E.ul('', {'class': 'files_list hide'}),
-                        {'class': 'files_list_block'}),
-                    {'class': 'blocks'}),
-                    {'class': 'stats_box'}
-                ),
-            {'class': 'hide', 'id': 'stats_box_template'}),
-            E.h1(stat),
-            E.h2('Dispositivos analizados'),
-            devices_elem,
-            E.h2(unicode(_('Estadísticas por tipo'))),
-            E.div('', {'id': 'stats_special'}),
-            E.h2(unicode(_('Estadísticas totales'))),
-            E.div('', {'id': 'stats_total'}),
-        {'id': 'content'}))
-        with open('html/stats/%s/index.html' % stat, 'w') as f:
-            f.write(render_html(root, '', 'html/stats/%s' % stat, '../../',
-                    css='../../static/css/stats.css'))
 def legal():
     root = (E.div(
-        E.script("""$(document).load(function(){
-            $('#autor_div').hide();
-            $('#autor_div').fadeIn();
-            $('#autor_div').slideDown();
-        });""", {'type': 'text/javascript'}),
         E.h1(_('Legal y licencia')),
         E.div(
             E.a('Nekmo Software 2011',
@@ -438,6 +273,7 @@ def legal():
     with open('html/legal.html', 'w') as f:
         html = render_html(root, '', '', '')
         f.write(html)
+>>>>>>> other
 
 def html_build(cfg):
     if not os.path.exists('html'):
@@ -448,46 +284,34 @@ def html_build(cfg):
     filter_dir = cfg.findall('filter_dir')[0].text
     filter_filename = cfg.findall('filter_filename')[0].text
     devices_files = {}
-    for dir_ in sorted(cfg.findall('dirs/dir'), key=sorted_device):
+    for dir_ in cfg.findall('dirs/dir'):
+<<<<<<< local
+=======
         logging.info(_('Construyendo índice de "%s"') % dir_.attrib['device'])
+>>>>>>> other
         if dir_.text.startswith('/'): dir_.text = dir_.text[1:]
         files, files_by_dir, real_root, sizes = search_files(dir_.attrib['device'],
+<<<<<<< local
+                                            dir_.text, exts, get_video_info)
+=======
                     dir_.text, exts, get_video_info,
                     filter_dir, filter_filename)
-        if not os.path.exists(real_root):
-            sys.stdout.write("\x08" * 80)
-            sys.stdout.flush()
-            logging.warning('No se pudo acceder a "%s".' % real_root)
-            continue
-        sys.stdout.write("\x08" * 80)
-        sys.stdout.flush()
-        sys.stdout.write(_('Generando archivos index del proyecto...'))
-        sys.stdout.flush()
+>>>>>>> other
         html_device('/'.join([dir_.attrib['device'], dir_.text]),
                     files_by_dir, real_root, sizes)
         make_index('/'.join([dir_.attrib['device'], dir_.text]),
                     files, real_root)
-        # Crear estadísticas para el dispositivo, si está incluido en el listado
-        find_text = etree.XPath("//text()")
-        device_name = '/'.join([dir_.attrib['device'], dir_.text])
-        for stat in cfg.findall('stats/stat'):
-            devices_in_stat = stat.findtext('devices/device')
-            if not devices_in_stat or dir_.attrib['device'] in devices_in_stat:
-                make_stat(stat, device_name, real_root, files_by_dir)
-        sys.stdout.write(' ' * 80)
-        sys.stdout.flush()
-        sys.stdout.write("\x08" * 80)
-        sys.stdout.flush()
-        sys.stdout.write(_('Terminado\n'))
-        sys.stdout.flush()
     # Se crea el índice de particiones
-    stats_index()
     devices_index()
+<<<<<<< local
+=======
     # Añadir nota legal
     legal()
+>>>>>>> other
     try:
         shutil.rmtree('html/static')
     except:
         pass
-    shutil.copytree(os.path.join(main_dir, 'static'), 'html/static')
-    print('Terminado de indexar todos los dispositivos.')
+<<<<<<< local
+    shutil.copytree('static', 'html/static')=======
+    shutil.copytree(os.path.join(main_dir, 'static'), 'html/static')>>>>>>> other

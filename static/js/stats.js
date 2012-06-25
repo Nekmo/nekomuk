@@ -2,7 +2,11 @@ $(document).ready(function(){
     graph_conf = {
         series: {
             pie: { 
-                show: true
+                show: true,
+                combine: {
+                    color: '#999',
+                    threshold: 0.1
+                }
             }
         },
         grid: {
@@ -10,6 +14,7 @@ $(document).ready(function(){
             clickable: true
         }
     }
+    specials = new Array();
     
     $('#stats_total').append($('#stats_box_template .stats_box').clone());
     
@@ -57,8 +62,8 @@ $(document).ready(function(){
         $.getJSON('devices/' + $(device).attr('title'), function(data){
             devices[device_name] = data   
             // Estadísticas totales
-            $('#stats_total .total_t').attr('title', $('#stats_total .total_t').attr('title') + data['stats']['total_t']);
-            $('#stats_total .total_size').attr('title', $('#stats_total .total_size').attr('title') + data['stats']['total_size']);
+            $('#stats_total .total_t').attr('title', parseInt($('#stats_total .total_t').attr('title')) + data['stats']['total_t']);
+            $('#stats_total .total_size').attr('title', parseInt($('#stats_total .total_size').attr('title')) + parseInt(data['stats']['total_size']));
             
             $('#stats_total .total_size').text(parseSize($('#stats_total .total_size').attr('title')));
             $('#stats_total .total_t').text(time_from_seconds($('#stats_total .total_t').attr('title')));
@@ -76,20 +81,21 @@ $(document).ready(function(){
             $.plot($("#stats_total .containers"), containers_data, graph_conf);
             $.plot($("#stats_total .video_codecs"), video_codecs_data, graph_conf); 
             $.each(data['icons'], function(icon, subdata){
-                if(!$('#special_' + subdata['about']['legend']).length){
+                if(specials.indexOf(subdata['about']['legend']) == -1){
                     var title = $('<h3 />');
                     $(title).text(subdata['about']['legend']);
                     $('#stats_special').append(title);
                     var box = $('#stats_box_template .stats_box').clone();
                     $('#stats_special').append(box);
-                    $(box).attr('id', 'special_' + subdata['about']['legend']);
+                    specials[specials.length] = subdata['about']['legend']
+                    $(box).attr('id', 'special_' + (specials.length - 1));
                 } else {
-                    var box = $('#special_' + subdata['about']['legend'])
+                    var box = $('#special_' + specials.indexOf(subdata['about']['legend']))
                 }
-                $('.total_t', box).attr('title', $('.total_t', box).attr('title') + subdata['total_t']);
-                $('.total_size', box).attr('title', $('.total_size', box).attr('title') + subdata['total_size']);
-                $('.total_size', box).text(parseSize($('.total_size', box).attr('title')));
-                $('#stats_total', box).text(time_from_seconds($('.total_t', box).attr('title')));
+                $('.total_t', box).attr('title', parseInt($('.total_t', box).attr('title')) + subdata['total_t']);
+                $('.total_size', box).attr('title', parseInt($('.total_size', box).attr('title')) + subdata['total_size']);
+                $('.total_size', box).text(parseSize(parseInt($('.total_size', box).attr('title'))));
+                $('.total_t', box).text(time_from_seconds($('.total_t', box).attr('title')));
                 
                 $('.sfiles', box).text(parseInt($('.sfiles', box).text()) + subdata['files']);
                 $('.sdirs', box).text(parseInt($('.sdirs', box).text()) + subdata['dirs']);
@@ -115,31 +121,6 @@ $(document).ready(function(){
             
         });
     });
-    
-//     $.plot($("#stats_special"), data,
-//     {
-//             series: {
-//                 pie: { 
-//                     show: true
-//                 }
-//             },
-//             grid: {
-//                 hoverable: true,
-//                 clickable: true
-//             }
-//     });
-//     $.plot($("#stats_special"), data,
-//     {
-//             series: {
-//                 pie: { 
-//                     show: true
-//                 }
-//             },
-//             grid: {
-//                 hoverable: true,
-//                 clickable: true
-//             }
-//     });
     
     $('.toggle').live('click', function(){
         var elem = $(this).parent().children('.hide,.show');

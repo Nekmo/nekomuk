@@ -41,8 +41,7 @@ if sys.version_info < (3,0):
 
 __version__ = '0.06'
 
-EXTS = ['mkv', 'mp4', 'avi', 'mov', 'wmv', 'flv', 'rmvb', 'ogv', 'mpeg', 'divx'
-        'mpg', 'rm', 'vob', 'bsf', 'm2ts', 'm2t', ]
+EXTS = ['mkv', 'mp4', 'avi', 'mov', 'wmv', 'flv', 'rmvb',]
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)

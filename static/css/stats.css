@@ -31,6 +31,12 @@ h4 {
     border: 1px dashed gainsboro;
 }
 
+#stats_total .graphs > div {
+    width: 400px !important;
+    height: 200px !important;
+    border: 1px dashed gainsboro;
+}
+
 body > #panel {
     display: none;
 }

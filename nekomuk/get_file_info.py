@@ -67,7 +67,7 @@ def get_video_info(root, file, label, device, path):
         os.makedirs(project_dir)
     project_file = os.path.join(project_dir, file)
     system_file = os.path.join(root, file)
-    if info and not os.path.exists(project_file + '.jpg'):
+    if info and not os.path.exists(project_file + '.jpg') and info['video']:
         orig_width = info['video'][0]['width']
         orig_height = info['video'][0]['height']
         if orig_height and orig_width:
